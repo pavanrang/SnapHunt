@@ -16,19 +16,51 @@ export default function App() {
 
   const pickImage = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        setImage(result.assets[0].uri);
-      }
+      Alert.alert(
+        "Choose Image Source",
+        "Would you like to take a picture or choose from the camera roll?",
+        [
+          {
+            text: "Take Picture",
+            onPress: () => launchCamera()
+          },
+          {
+            text: "Choose from Camera Roll",
+            onPress: () => launchImageLibrary()
+          }
+        ]
+      );
     } catch (error) {
       console.error('Error picking image:', error);
       Alert.alert('Error', 'Failed to pick image');
+    }
+  };
+
+  const launchCamera = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    handleImagePickerResult(result);
+  };
+
+  const launchImageLibrary = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    handleImagePickerResult(result);
+  };
+
+  const handleImagePickerResult = (result) => {
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setImage(result.assets[0].uri);
     }
   };
 
@@ -97,7 +129,7 @@ export default function App() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Button title="Pick an image from camera roll" onPress={pickImage} />
+      <Button title="Pick an image" onPress={pickImage} />
       {image && (
         <View style={styles.imagePreviewContainer}>
           <Image source={{ uri: image }} style={styles.imagePreview} />
